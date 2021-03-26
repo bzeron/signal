@@ -7,6 +7,16 @@ import (
 	"os/signal"
 )
 
+// Error
+type Error struct {
+	s os.Signal
+}
+
+// Error impl error interface
+func (e Error) Error() string {
+	return fmt.Sprintf("signal: %s", e.s)
+}
+
 // Group
 type Group struct {
 	ech    chan error
@@ -36,7 +46,7 @@ func (g *Group) Wait() error {
 	case err := <-g.ech:
 		return err
 	case sig := <-g.sch:
-		return fmt.Errorf("signal: %s", sig)
+		return &Error{s: sig}
 	}
 }
 
